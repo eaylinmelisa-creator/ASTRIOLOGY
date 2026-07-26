@@ -7,7 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+    <!--
+      Microsoft.AspNetCore.OpenApi 10.0.10 transitively pulls Microsoft.OpenApi 2.0.0,
+      which is affected by GHSA-v5pm-xwqc-g5wc (high, patched in 2.7.5).
+      This explicit reference overrides the transitive version. Do not remove until
+      the ASP.NET Core package ships a dependency on 2.7.5 or later.
+      Pinned to the latest stable 2.x: the 3.x line is a different major version and
+      is not ABI-compatible with what Microsoft.AspNetCore.OpenApi 10.x builds against.
+    -->
+    <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
   </ItemGroup>
 
 </Project>
