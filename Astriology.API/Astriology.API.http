@@ -1,0 +1,6 @@
+@Astriology.API_HostAddress = http://localhost:5158
+
+GET {{Astriology.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
