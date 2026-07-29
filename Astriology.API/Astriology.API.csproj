@@ -19,4 +19,9 @@
     <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Astriology.Application\Astriology.Application.csproj" />
+    <ProjectReference Include="..\Astriology.Infrastructure\Astriology.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
