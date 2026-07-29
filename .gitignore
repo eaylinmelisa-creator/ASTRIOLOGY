@@ -484,3 +484,16 @@ $RECYCLE.BIN/
 # Proje ozel
 docs/
 
+# Hassas veri - asla commit'lenmez.
+# Admin ve test kullanici bilgileri README'de paylasilir; parolalarin KENDISI
+# repoda durmaz. Lokal gelistirmede dotnet user-secrets, Docker'da environment
+# degiskeni kullanilir.
+appsettings.Secrets.json
+appsettings.*.Local.json
+appsettings.Local.json
+secrets.json
+*.pfx
+*.p12
+*.key
+*.pem
+
