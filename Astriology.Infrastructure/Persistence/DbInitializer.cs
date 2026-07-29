@@ -38,10 +38,12 @@ public static class DbInitializer
         await ZodiacSignSeed.SeedAsync(context, cancellationToken);
         await CategorySeed.SeedAsync(context, cancellationToken);
 
+        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+        var configuration = services.GetRequiredService<IConfiguration>();
+
         // Posts need an author, so the administrator has to exist first.
-        var adminId = await AdminUserSeed.SeedAsync(
-            services.GetRequiredService<UserManager<ApplicationUser>>(),
-            services.GetRequiredService<IConfiguration>());
+        var adminId = await AdminUserSeed.SeedAsync(userManager, configuration);
+        await DemoUserSeed.SeedAsync(userManager, configuration);
 
         await PostSeed.SeedAsync(context, adminId, cancellationToken);
 

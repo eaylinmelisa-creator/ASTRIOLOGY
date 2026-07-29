@@ -51,14 +51,14 @@ internal static class AdminUserSeed
         if (!created.Succeeded)
         {
             throw new InvalidOperationException(
-                $"Could not create the administrator account: {DescribeErrors(created)}");
+                $"Could not create the administrator account: {IdentityErrors.Describe(created)}");
         }
 
         var roleAssigned = await userManager.AddToRoleAsync(admin, RoleNames.Admin);
         if (!roleAssigned.Succeeded)
         {
             throw new InvalidOperationException(
-                $"Could not assign the Admin role: {DescribeErrors(roleAssigned)}");
+                $"Could not assign the Admin role: {IdentityErrors.Describe(roleAssigned)}");
         }
 
         return admin.Id;
@@ -68,7 +68,4 @@ internal static class AdminUserSeed
         configuration[key]
         ?? throw new InvalidOperationException(
             $"Configuration key '{key}' is missing. The administrator account cannot be seeded without it.");
-
-    private static string DescribeErrors(IdentityResult result) =>
-        string.Join("; ", result.Errors.Select(error => $"{error.Code} - {error.Description}"));
 }

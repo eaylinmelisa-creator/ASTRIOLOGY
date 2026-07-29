@@ -23,11 +23,8 @@ internal static class RoleSeed
             if (!result.Succeeded)
             {
                 throw new InvalidOperationException(
-                    $"Could not create role '{roleName}': {DescribeErrors(result)}");
+                    $"Could not create role '{roleName}': {IdentityErrors.Describe(result)}");
             }
         }
     }
-
-    private static string DescribeErrors(IdentityResult result) =>
-        string.Join("; ", result.Errors.Select(error => $"{error.Code} - {error.Description}"));
 }
