@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>88694532-d135-4297-90e0-490941a28d7a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +18,15 @@
       is not ABI-compatible with what Microsoft.AspNetCore.OpenApi 10.x builds against.
     -->
     <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
+
+    <!--
+      EF Core tooling looks for Microsoft.EntityFrameworkCore.Design in the STARTUP
+      project, so it cannot live in Astriology.Infrastructure alongside the DbContext.
+      PrivateAssets="all" keeps it design-time only: it is not published, not part of
+      the runtime output, and not exposed to projects referencing this one. This is
+      the documented exception to keeping EF out of the presentation layer.
+    -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="[10.0.10]" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

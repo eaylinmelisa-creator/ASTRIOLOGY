@@ -1,6 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <!--
+      Bracketed versions are NuGet's exact-match syntax. A bare "10.0.10" means
+      ">= 10.0.10" and lets a transitive dependency silently pull a different
+      version in - the same mechanism that pulled the vulnerable Microsoft.OpenApi
+      2.0.0 into this solution. 10.0.10 keeps every Microsoft package in the
+      solution on one servicing band, matching Microsoft.AspNetCore.OpenApi.
+    -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="[10.0.10]" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="[10.0.10]" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Astriology.Application\Astriology.Application.csproj" />
     <ProjectReference Include="..\Astriology.Domain\Astriology.Domain.csproj" />
   </ItemGroup>
