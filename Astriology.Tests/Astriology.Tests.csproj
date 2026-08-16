@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <!-- xunit.v3 test projects build as console applications. -->
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      Bracketed versions are NuGet's exact-match syntax; see the note in
+      Astriology.Infrastructure.csproj.
+
+      xunit.v3 rather than xunit 2.x: NuGet marks the 2.x package deprecated
+      ("Legacy", alternative xunit.v3). Held at 3.2.2 - the 4.0.0 major is too new to
+      satisfy the two-week maturity rule in section 6.1.
+
+      Microsoft.NET.Test.Sdk stays at the version the SDK template pins; the 18.x
+      major moves toward Microsoft.Testing.Platform, which is a separate change to
+      make deliberately rather than as a side effect.
+
+      Microsoft.AspNetCore.Mvc.Testing is held at 10.0.10 to match every other
+      Microsoft package in the solution, even though 10.0.11 exists.
+    -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="[17.14.1]" />
+    <PackageReference Include="xunit.v3" Version="[3.2.2]" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="[3.1.5]" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="[10.0.10]" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Astriology.Domain\Astriology.Domain.csproj" />
+    <ProjectReference Include="..\Astriology.Application\Astriology.Application.csproj" />
+    <ProjectReference Include="..\Astriology.Infrastructure\Astriology.Infrastructure.csproj" />
+    <ProjectReference Include="..\Astriology.API\Astriology.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.Testing.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

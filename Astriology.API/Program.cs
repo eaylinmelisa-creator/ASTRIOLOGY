@@ -23,3 +23,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.Run();
+
+/// <summary>
+/// Top-level statements compile into an internal Program class. Declaring it public
+/// lets WebApplicationFactory&lt;Program&gt; reference it from the test project.
+/// </summary>
+public partial class Program;
