@@ -18,7 +18,7 @@ public sealed class ConstraintTests
 
     public ConstraintTests(TestDatabaseFixture fixture) => _fixture = fixture;
 
-    private static CancellationToken Token => TestContext.Current.CancellationToken;
+    private static CancellationToken Token => CancellationToken.None;
 
     [Fact]
     public async Task Duplicate_zodiac_sign_slug_is_rejected()

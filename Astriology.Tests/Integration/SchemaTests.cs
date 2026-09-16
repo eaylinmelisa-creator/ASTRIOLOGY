@@ -12,7 +12,7 @@ public sealed class SchemaTests
 
     public SchemaTests(TestDatabaseFixture fixture) => _fixture = fixture;
 
-    private static CancellationToken Token => TestContext.Current.CancellationToken;
+    private static CancellationToken Token => CancellationToken.None;
 
     [Fact]
     public async Task Migrations_apply_cleanly_and_leave_no_pending_migration()

@@ -15,7 +15,7 @@ public sealed class SeedTests
 
     public SeedTests(TestDatabaseFixture fixture) => _fixture = fixture;
 
-    private static CancellationToken Token => TestContext.Current.CancellationToken;
+    private static CancellationToken Token => CancellationToken.None;
 
     [Fact]
     public async Task Seed_creates_the_expected_reference_data()
@@ -27,7 +27,11 @@ public sealed class SeedTests
         Assert.Equal(4, await context.Categories.CountAsync(Token));
         Assert.Equal(48, await context.Posts.CountAsync(Token));
         Assert.Equal(2, await context.Roles.CountAsync(Token));
-        Assert.Equal(2, await context.Users.CountAsync(Token));
+
+        // Not an exact count: the auth tests register accounts of their own into this
+        // same database. That the two seeded accounts exist is asserted by
+        // Seeded_accounts_hold_the_roles_they_are_supposed_to.
+        Assert.True(await context.Users.CountAsync(Token) >= 2);
     }
 
     [Fact]

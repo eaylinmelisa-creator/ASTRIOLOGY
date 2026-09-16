@@ -25,10 +25,10 @@ public sealed class TestDatabaseFixture : IAsyncLifetime
     private ServiceProvider _serviceProvider = null!;
 
     /// <summary>Password the seeded administrator was created with, for this run only.</summary>
-    public string AdminPassword { get; } = GeneratePassword();
+    public string AdminPassword => TestSecrets.AdminPassword;
 
     /// <summary>Password the seeded demo user was created with, for this run only.</summary>
-    public string DemoPassword { get; } = GeneratePassword();
+    public string DemoPassword => TestSecrets.DemoPassword;
 
     /// <summary>
     /// Root provider, for the few tests that need to hand the whole container to
@@ -36,15 +36,11 @@ public sealed class TestDatabaseFixture : IAsyncLifetime
     /// </summary>
     public IServiceProvider RootServices => _serviceProvider;
 
-    public async ValueTask InitializeAsync()
+    public async Task InitializeAsync()
     {
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.Testing.json", optional: false)
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Seed:AdminPassword"] = AdminPassword,
-                ["Seed:DemoPassword"] = DemoPassword,
-            })
+            .AddInMemoryCollection(TestSecrets.AsConfiguration())
             .Build();
 
         var connectionString = configuration.GetConnectionString("Default")
@@ -58,7 +54,9 @@ public sealed class TestDatabaseFixture : IAsyncLifetime
         services.AddInfrastructure(configuration);
         _serviceProvider = services.BuildServiceProvider();
 
-        var cancellationToken = TestContext.Current.CancellationToken;
+        // xunit 2.x has no ambient test context to take a token from; fixture setup is
+        // not cancellable here.
+        var cancellationToken = CancellationToken.None;
 
         await using (var scope = _serviceProvider.CreateAsyncScope())
         {
@@ -69,7 +67,7 @@ public sealed class TestDatabaseFixture : IAsyncLifetime
         await DbInitializer.InitializeAsync(_serviceProvider, cancellationToken);
     }
 
-    public async ValueTask DisposeAsync()
+    public async Task DisposeAsync()
     {
         // The database is deliberately left in place after the run so a failure can be
         // inspected. The next run recreates it from scratch.
@@ -99,9 +97,4 @@ public sealed class TestDatabaseFixture : IAsyncLifetime
         }
     }
 
-    /// <summary>
-    /// Satisfies the configured Identity rules: at least eight characters with an
-    /// upper case letter, a lower case letter, a digit and a special character.
-    /// </summary>
-    private static string GeneratePassword() => $"Aa1!{Guid.NewGuid():N}";
 }
