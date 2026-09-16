@@ -1,5 +1,8 @@
+using Astriology.Application.Interfaces;
+using Astriology.Domain.Constants;
 using Astriology.Infrastructure.Identity;
 using Astriology.Infrastructure.Persistence;
+using Astriology.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +16,6 @@ namespace Astriology.Infrastructure;
 /// </summary>
 public static class DependencyInjection
 {
-    /// <summary>Characters allowed in a user name. Turkish letters are excluded.</summary>
-    private const string AllowedUserNameCharacters =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
-
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -37,17 +36,49 @@ public static class DependencyInjection
         // pull in Identity's cookie authentication handlers.
         services.AddIdentityCore<ApplicationUser>(options =>
             {
-                options.Password.RequiredLength = 8;
+                // Values come from AccountRules so Identity and the request validators
+                // cannot drift apart.
+                options.Password.RequiredLength = AccountRules.PasswordMinLength;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
                 options.Password.RequireDigit = true;
                 options.Password.RequireNonAlphanumeric = true;
 
-                options.User.AllowedUserNameCharacters = AllowedUserNameCharacters;
+                options.User.AllowedUserNameCharacters = AccountRules.AllowedUserNameCharacters;
                 options.User.RequireUniqueEmail = true;
             })
             .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<AstriologyDbContext>();
+
+        // Validated here so a missing or too-short signing key crashes the application
+        // at boot instead of on the first login attempt.
+        services.AddOptions<JwtSettings>()
+            .Bind(configuration.GetSection(JwtSettings.SectionName))
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.Issuer),
+                "Jwt:Issuer is required.")
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.Audience),
+                "Jwt:Audience is required.")
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.Key),
+                "Jwt:Key is required. Set it through user secrets (Jwt:Key) or the Jwt__Key "
+                + "environment variable - never in a tracked configuration file.")
+            .Validate(
+                settings => settings.Key.Length >= JwtSettings.MinimumKeyLength,
+                $"Jwt:Key must be at least {JwtSettings.MinimumKeyLength} characters so the "
+                + "signing key reaches the 256 bits HMAC-SHA256 requires.")
+            .Validate(
+                settings => settings.AccessTokenMinutes > 0,
+                "Jwt:AccessTokenMinutes must be greater than zero.")
+            .Validate(
+                settings => settings.RefreshTokenDays > 0,
+                "Jwt:RefreshTokenDays must be greater than zero.")
+            .ValidateOnStart();
+
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
 
         // Deliberately not registered:
         // - AddSignInManager: SignInManager lives in the ASP.NET Core shared framework,

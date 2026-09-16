@@ -27,6 +27,25 @@
       the documented exception to keeping EF out of the presentation layer.
     -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="[10.0.10]" PrivateAssets="all" />
+
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="[10.0.10]" />
+
+    <!--
+      Only the DI extensions live here; the validators themselves are in
+      Astriology.Application, which takes the base FluentValidation package alone.
+    -->
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="[12.1.1]" />
+
+    <!--
+      Swagger UI only - no document generator. .NET 9 dropped Swashbuckle from the
+      templates and AddOpenApi/MapOpenApi produce the document but ship no interface.
+      This package serves the UI and points it at the document we already generate, so
+      there is exactly one OpenAPI pipeline.
+
+      Mapped under IsDevelopment() only; an exposed schema in production is an
+      information leak.
+    -->
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="[10.2.3]" />
   </ItemGroup>
 
   <ItemGroup>

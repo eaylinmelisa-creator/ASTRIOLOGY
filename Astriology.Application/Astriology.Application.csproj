@@ -1,6 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <!--
+      The only NuGet package this layer is allowed to take (roadmap section 3).
+      Anything ORM- or framework-related belongs in Astriology.Infrastructure.
+      Bracketed version is NuGet's exact-match syntax.
+    -->
+    <PackageReference Include="FluentValidation" Version="[12.1.1]" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Astriology.Domain\Astriology.Domain.csproj" />
   </ItemGroup>
 
